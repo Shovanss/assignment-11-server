@@ -47,13 +47,33 @@ app.get('/', (req, res) => {
         res.send(result)
     })
 
-      app.get('/view-assignment/:id',async(req,res)=>{
+      app.get('/assignment/:id',async(req,res)=>{
         const id = req.params.id
         const query = { _id: new ObjectId(id) };
         const user = await assignmentCollection.findOne(query);
         res.send(user)
       })
 
+      app.put('/assignment/:id',async(req,res)=>{
+        const id = req.params.id
+        const assignment = req.body;
+        console.log(id,assignment)
+        const filter = {_id: new ObjectId(id)};
+        const options = { upsert: true };
+        const updateUser = {
+          $set: {
+            title: assignment.title,
+            thumbnail_image_url: assignment.thumbnail_image_url,
+            marks: assignment.marks,
+            description: assignment.description,
+            difficulty_level: assignment.difficulty_level,
+            due_date: assignment.due_date
+          },
+        };
+        const result = await spotCollection.updateOne(filter, updateUser, options);
+          res.send(result)
+      })
+  
       
   
 
