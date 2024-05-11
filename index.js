@@ -15,7 +15,7 @@ app.get('/', (req, res) => {
   })
 
 
-  const { MongoClient, ServerApiVersion } = require('mongodb');
+  const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
   const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.dr9an2m.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
   
   // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -32,6 +32,32 @@ app.get('/', (req, res) => {
       // Connect the client to the server	(optional starting in v4.7)
     //   await client.connect();
       // Send a ping to confirm a successful connection
+      const assignmentCollection = client.db("assignmentDB").collection("assignment");
+
+      app.get('/assignment',async(req,res)=>{
+        const cursor = assignmentCollection.find()
+        const result = await cursor.toArray()
+        res.send(result)
+      })
+
+      app.post('/assignment',async(req,res)=>{
+        const assignment = req.body;
+        console.log(assignment)
+        const result = await assignmentCollection.insertOne(assignment);
+        res.send(result)
+    })
+
+      app.get('/view-assignment/:id',async(req,res)=>{
+        const id = req.params.id
+        const query = { _id: new ObjectId(id) };
+        const user = await assignmentCollection.findOne(query);
+        res.send(user)
+      })
+
+      
+  
+
+
       await client.db("admin").command({ ping: 1 });
       console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
