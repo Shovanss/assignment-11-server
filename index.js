@@ -54,6 +54,30 @@ app.get('/', (req, res) => {
         res.send(user)
       })
 
+      app.get('/my-assignment/:email',async(req,res)=>{
+        console.log(req.params.email)
+        const result = await assignmentCollection.find({email: req.params.email}).toArray()
+        res.send(result)
+      })
+
+      app.put('/my-assignment/:id', async (req, res) => {
+        const id = req.params.id;
+        const filter = { _id: new ObjectId(id) };
+        const options = { upsert: true };
+        const updatedBooking = req.body;
+        console.log(updatedBooking);
+        const updateDoc = {
+            $set: {
+                status: updatedBooking.status,
+                pdf: updatedBooking.pdf,
+                notes: updatedBooking.notes
+            },
+        };
+        const result = await assignmentCollection.updateOne(filter, updateDoc,options);
+        res.send(result);
+    })
+
+      
       app.put('/assignment/:id',async(req,res)=>{
         const id = req.params.id
         const assignment = req.body;
@@ -70,9 +94,20 @@ app.get('/', (req, res) => {
             due_date: assignment.due_date
           },
         };
-        const result = await spotCollection.updateOne(filter, updateUser, options);
+        const result = await assignmentCollection.updateOne(filter, updateUser, options);
           res.send(result)
       })
+
+      
+    
+      app.delete('/delete/:id',async(req,res)=>{
+        const id = req.params.id
+        console.log('delete',id)
+        const query = { _id: new ObjectId(id) };
+        const result = await assignmentCollection.deleteOne(query);
+        res.send(result)
+      })
+    
   
       
   
