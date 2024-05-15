@@ -33,6 +33,16 @@ app.get('/', (req, res) => {
     //   await client.connect();
       // Send a ping to confirm a successful connection
       const assignmentCollection = client.db("assignmentDB").collection("assignment");
+      
+      const submittedCollection = client.db("assignmentDB").collection("submitted");
+
+      app.post('/submitted',async(req,res)=>{
+        const submitted = req.body;
+        console.log(submitted)
+        const result = await submittedCollection.insertOne(submitted);
+        res.send(result)
+    })
+      
 
       app.get('/assignment',async(req,res)=>{
         const cursor = assignmentCollection.find()
@@ -46,6 +56,7 @@ app.get('/', (req, res) => {
         const result = await assignmentCollection.insertOne(assignment);
         res.send(result)
     })
+    
 
       app.get('/assignment/:id',async(req,res)=>{
         const id = req.params.id
@@ -53,13 +64,22 @@ app.get('/', (req, res) => {
         const user = await assignmentCollection.findOne(query);
         res.send(user)
       })
+      app.get('/pending-assignment/:status',async(req,res)=>{
+        const status = req.params.status;
+        const user = await submittedCollection.find({ status: status }).toArray();
+        res.send(user)
+      })
+     
+    
      
 
       app.get('/my-assignment/:email',async(req,res)=>{
         console.log(req.params.email)
-        const result = await assignmentCollection.find({email: req.params.email}).toArray()
+        const result = await submittedCollection.find({email: req.params.email}).toArray()
         res.send(result)
       })
+
+
 
       app.put('/my-assignment/:id', async (req, res) => {
         const id = req.params.id;
@@ -71,13 +91,15 @@ app.get('/', (req, res) => {
             $set: {
                 status: updatedBooking.status,
                 pdf: updatedBooking.pdf,
-                
-                obtained_marks: updatedBooking.obtained_marks,
+                notes: updatedBooking.notes
             },
         };
         const result = await assignmentCollection.updateOne(filter, updateDoc,options);
         res.send(result);
     })
+
+
+      
      
       
       app.put('/assignment/:id',async(req,res)=>{
