@@ -53,6 +53,7 @@ app.get('/', (req, res) => {
         const user = await assignmentCollection.findOne(query);
         res.send(user)
       })
+     
 
       app.get('/my-assignment/:email',async(req,res)=>{
         console.log(req.params.email)
@@ -70,13 +71,14 @@ app.get('/', (req, res) => {
             $set: {
                 status: updatedBooking.status,
                 pdf: updatedBooking.pdf,
-                notes: updatedBooking.notes
+                
+                obtained_marks: updatedBooking.obtained_marks,
             },
         };
         const result = await assignmentCollection.updateOne(filter, updateDoc,options);
         res.send(result);
     })
-
+     
       
       app.put('/assignment/:id',async(req,res)=>{
         const id = req.params.id
@@ -91,7 +93,8 @@ app.get('/', (req, res) => {
             marks: assignment.marks,
             description: assignment.description,
             difficulty_level: assignment.difficulty_level,
-            due_date: assignment.due_date
+            due_date: assignment.due_date,
+            
           },
         };
         const result = await assignmentCollection.updateOne(filter, updateUser, options);
@@ -113,7 +116,7 @@ app.get('/', (req, res) => {
   
 
 
-      await client.db("admin").command({ ping: 1 });
+      // await client.db("admin").command({ ping: 1 });
       console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
       // Ensures that the client will close when you finish/error
