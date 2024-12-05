@@ -1,10 +1,17 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const jwt = require('jsonwebtoken')
+const cookieParser = require('cookie-parser')
 require('dotenv').config()
 const port = process.env.PORT ||5000
-app.use(cors())
+
+
+app.use(cors(
+));
+
 app.use(express.json())
+
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
@@ -26,6 +33,10 @@ app.get('/', (req, res) => {
       deprecationErrors: true,
     }
   });
+
+  
+
+
   
   async function run() {
     try {
@@ -35,6 +46,8 @@ app.get('/', (req, res) => {
       const assignmentCollection = client.db("assignmentDB").collection("assignment");
       
       const submittedCollection = client.db("assignmentDB").collection("submitted");
+
+    
 
       app.post('/submitted',async(req,res)=>{
         const submitted = req.body;
@@ -67,7 +80,9 @@ app.get('/', (req, res) => {
       app.get('/pending-assignment/:status',async(req,res)=>{
         const status = req.params.status;
         const user = await submittedCollection.find({ status: status }).toArray();
+        console.log(user)
         res.send(user)
+       
       })
      
     
